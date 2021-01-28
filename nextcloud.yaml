@@ -100,7 +100,7 @@ objects:
     strategy:
       dockerStrategy:
         from:
-          kind: DockerImage
+          kind: ImageStreamTag
           name: nginx:alpine
       type: Docker
     triggers:
