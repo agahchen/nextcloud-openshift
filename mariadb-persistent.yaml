@@ -29,7 +29,6 @@ metadata:
     tags: database,mariadb
   creationTimestamp: "2016-08-26T14:45:43Z"
   name: mariadb-persistent
-  namespace: openshift
   resourceVersion: "567967744"
   selfLink: /apis/template.openshift.io/v1/namespaces/openshift/templates/mariadb-persistent
   uid: c4085150-6b9b-11e6-8f78-0050568348cc
@@ -109,8 +108,8 @@ objects:
               secretKeyRef:
                 key: database-name
                 name: ${DATABASE_SERVICE_NAME}
-          image: ' '
-          imagePullPolicy: IfNotPresent
+          image: mariadb:${MARIADB_VERSION}
+          imagePullPolicy: Always
           livenessProbe:
             initialDelaySeconds: 30
             tcpSocket:
@@ -147,7 +146,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: mariadb:${MARIADB_VERSION}
-          namespace: ${NAMESPACE}
       type: ImageChange
     - type: ConfigChange
 parameters:
@@ -156,10 +154,6 @@ parameters:
   name: MEMORY_LIMIT
   required: true
   value: 512Mi
-- description: The OpenShift Namespace where the ImageStream resides.
-  displayName: Namespace
-  name: NAMESPACE
-  value: openshift
 - description: The name of the OpenShift Service exposed for the database.
   displayName: Database Service Name
   name: DATABASE_SERVICE_NAME
