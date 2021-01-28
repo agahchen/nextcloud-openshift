@@ -6,22 +6,22 @@ metadata:
     description: "Nextcloud - A safe home for all your data"
     tags: "fileshare,nextcloud"
     iconClass: fa-cloud-upload
-    template.openshift.io/provider-display-name: "tobrunet"
-    template.openshift.io/documentation-url: "https://github.com/tobru/nextcloud-openshift/blob/master/README.md"
-    template.openshift.io/support-url: "https://github.com/tobru/nextcloud-openshift/issues"
+    template.openshift.io/provider-display-name: "rsft"
+    template.openshift.io/documentation-url: "https://github.com/agahchen/nextcloud-openshift/blob/master/README.md"
+    template.openshift.io/support-url: "https://github.com/agahchen/nextcloud-openshift/issues"
 parameters:
 - name: NEXTCLOUD_HOST
   description: Application URL of Nextcloud (Route/host)
   required: true
 - name: NEXTCLOUD_IMAGE
   description: Image to deploy
-  value: docker.io/nextcloud
+  value: nextcloud
 - name: NEXTCLOUD_IMAGE_TAG
   description: Tag of the Nextcloud Docker Image to deploy
   value: 12-fpm
 - name: NGINX_DOCKERFILE_REPO
   description: Nginx Dockerfile source repository
-  value: https://github.com/tobru/nextcloud-openshift.git
+  value: https://github.com/agahchen/nextcloud-openshift.git
 - name: PVC_SIZE
   description: PVC size for Apps, Config and Data
   value: 5Gi
