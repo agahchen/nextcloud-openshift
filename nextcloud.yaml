@@ -22,6 +22,9 @@ parameters:
 - name: NGINX_DOCKERFILE_REPO
   description: Nginx Dockerfile source repository
   value: https://github.com/agahchen/nextcloud-openshift.git
+- name: NGINX_DOCKERFILE_REPO_REF
+  description: Nginx Dockerfile source repository branch / tags
+  value: feature/jhi-1565-create-initial-instance
 - name: PVC_SIZE
   description: PVC size for Apps, Config and Data
   value: 5Gi
@@ -92,6 +95,7 @@ objects:
     source:
       git:
         uri: ${NGINX_DOCKERFILE_REPO}
+        ref: ${NGINX_DOCKERFILE_REPO_REF}
       type: Git
     strategy:
       dockerStrategy:
