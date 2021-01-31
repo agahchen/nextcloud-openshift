@@ -1,0 +1,1 @@
+https://medium.com/@pero.milosev/rolling-your-own-nextcloud-server-on-openshift-kubernetes-a712649825a8
