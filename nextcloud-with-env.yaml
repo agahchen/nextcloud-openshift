@@ -13,6 +13,9 @@ parameters:
 - name: NEXTCLOUD_HOST
   description: Application URL of Nextcloud (Route/host)
   required: true
+- name: NEXTCLOUD_ENV
+  description: Application instance
+  required: true
 - name: NEXTCLOUD_IMAGE
   description: Image to deploy
   value: nextcloud
@@ -32,7 +35,7 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: nextcloud-data
+    name: nextcloud-${NEXTCLOUD_ENV}-data
   spec:
     accessModes:
     - ReadWriteMany
@@ -43,7 +46,7 @@ objects:
   kind: ImageStream
   metadata:
     labels:
-      app: nextcloud
+      app: nextcloud-${NEXTCLOUD_ENV}
     name: nextcloud
   spec:
     tags:
@@ -57,8 +60,8 @@ objects:
       name: ${NEXTCLOUD_IMAGE_TAG}
       referencePolicy:
         type: Source
-- kind: ImageStream
-  apiVersion: v1
+- apiVersion: v1
+  kind: ImageStream
   metadata:
     labels:
       build: nginx
@@ -75,8 +78,8 @@ objects:
       name: latest
       referencePolicy:
         type: ""
-- kind: BuildConfig
-  apiVersion: v1
+- apiVersion: v1
+  kind: BuildConfig
   metadata:
     creationTimestamp: null
     labels:
@@ -105,8 +108,8 @@ objects:
       type: Docker
     triggers:
     - type: ConfigChange
-- kind: DeploymentConfig
-  apiVersion: v1
+- apiVersion: v1
+  kind: DeploymentConfig
   metadata:
     labels:
       app: nextcloud
@@ -134,33 +137,19 @@ objects:
       spec:
         containers:
         - env:
-          - name: NC_dbhost1
+          - name: NC_dbhost
             value: mariadb
-          - name: NC_dbuser1
+          - name: NC_dbuser
             valueFrom:
               secretKeyRef:
                 key: database-user
                 name: mariadb
-          - name: NC_dbpassword1
+          - name: NC_dbpassword
             valueFrom:
               secretKeyRef:
                 key: database-password
                 name: mariadb
-          - name: NC_dbname1
-            value: nextcloud
-          - name: POSTGRES_HOST
-            value: jh-etk-db-dev:5432
-          - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                key: superuser-username
-                name: jh-etk-db-dev
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: superuser-password
-                name: jh-etk-db-dev
-          - name: POSTGRES_DB
+          - name: NC_dbname
             value: nextcloud
           image: nextcloud
           imagePullPolicy: Always
@@ -239,8 +228,8 @@ objects:
         securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: nextcloud-source
-          emptyDir: {}
+        - emptyDir: {}
+          name: nextcloud-source
         - name: nextcloud-data
           persistentVolumeClaim:
             claimName: nextcloud-data
@@ -290,7 +279,7 @@ objects:
       targetPort: 8080-tcp
     to:
       kind: Service
-      name: nextcloud
+      name: nextcloud-${NEXTCLOUD_ENV}
       weight: 100
     wildcardPolicy: None
     tls:
@@ -299,7 +288,7 @@ objects:
 - apiVersion: batch/v1beta1
   kind: CronJob
   metadata:
-    name: nextcloud-cron
+    name: nextcloud-${NEXTCLOUD_ENV}-cron
   spec:
     concurrencyPolicy: Replace
     jobTemplate:
@@ -331,7 +320,7 @@ objects:
                 value: nextcloud
               image: nextcloud:${NEXTCLOUD_IMAGE_TAG}
               imagePullPolicy: Always
-              name: nextcloud-cron
+              name: nextcloud-${NEXTCLOUD_ENV}-cron
               resources: {}
               terminationMessagePath: /dev/termination-log
               volumeMounts:
@@ -351,8 +340,8 @@ objects:
             securityContext: {}
             terminationGracePeriodSeconds: 30
             volumes:
-            - name: nextcloud-source
-              emptyDir: {}
+            - emptyDir: {}
+              name: nextcloud-source
             - name: nextcloud-data
               persistentVolumeClaim:
                 claimName: nextcloud-data

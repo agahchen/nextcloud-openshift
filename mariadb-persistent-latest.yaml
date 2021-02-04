@@ -189,7 +189,7 @@ parameters:
   displayName: Version of MariaDB Image
   name: MARIADB_VERSION
   required: true
-  value: "10.2"
+  value: "latest"
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Volume Capacity
   name: VOLUME_CAPACITY

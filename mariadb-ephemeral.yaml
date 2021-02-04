@@ -60,19 +60,6 @@ objects:
     selector:
       name: ${DATABASE_SERVICE_NAME}
 - apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: ${DATABASE_SERVICE_NAME}
-    annotations:
-      volume.beta.kubernetes.io/storage-class: netapp-block-standard
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    storageClassName: netapp-block-standard
-    resources:
-      requests:
-        storage: ${VOLUME_CAPACITY}
-- apiVersion: v1
   kind: DeploymentConfig
   metadata:
     annotations:
@@ -134,13 +121,6 @@ objects:
           resources:
             limits:
               memory: ${MEMORY_LIMIT}
-          volumeMounts:
-          - mountPath: /var/lib/mysql/data
-            name: ${DATABASE_SERVICE_NAME}-data
-        volumes:
-        - name: ${DATABASE_SERVICE_NAME}-data
-          persistentVolumeClaim:
-            claimName: ${DATABASE_SERVICE_NAME}
     triggers:
     - imageChangeParams:
         automatic: true
@@ -190,8 +170,3 @@ parameters:
   name: MARIADB_VERSION
   required: true
   value: "10.2"
-- description: Volume space available for data, e.g. 512Mi, 2Gi.
-  displayName: Volume Capacity
-  name: VOLUME_CAPACITY
-  required: true
-  value: 10Gi

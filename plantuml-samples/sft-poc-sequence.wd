@@ -1,0 +1,38 @@
+title Secure File Transfer POC
+
+@startuml
+
+hide footbox
+
+actor "Police" as police
+participant "VicPD NextCloud" as vicpdnc
+participant "RSBC NextCloud" as rsbcnc
+participant "BC Registry VON Server" as von
+actor "ILO employee" as employee
+
+group Federated authentication: VicPD
+police -> vicpdnc: step 1.1 authenticate
+activate vicpdnc
+vicpdnc --> police: step 1.2 authenticated
+
+police -> vicpdnc: step 2.1 create eletronic impoundment form
+police -> vicpdnc: step 2.2 save form
+deactivate vicpdnc
+
+end
+
+... start of background transfer between federated nextcloud servers ...
+
+vicpdnc -> rsbcnc: step 3 transfer created eletronic impoundment forms
+
+activate rsbcnc
+
+group Federated authentication: Verifiable Credentials
+employee -> rsbcnc: step 4.1 authenticate using verifiable credentials
+rsbcnc --> employee : step 4.2 credentials verified
+
+employee -> rsbcnc: request electronic impoundment form for the received vehicle
+rsbcnc --> employee: make e-form available for download
+end
+
+@enduml

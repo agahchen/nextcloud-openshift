@@ -1,0 +1,34 @@
+@startuml OpenID Connect Discovery
+
+' https://plantuml.com/sequence-diagram
+' https://docs.konghq.com/hub/kong-inc/openid-connect/
+' https://crashedmind.github.io/PlantUMLHitchhikersGuide/index.html
+
+title OpenID Connect Discovery
+
+participant "Kong API Gateway <img:https://2tjosk2rxzc21medji3nfn1g-wpengine.netdna-ssl.com/wp-content/themes/konghq/assets/img/gradient-logo.svg>" as kong
+participant "OpenID Connect Provider <img:https://raw.githubusercontent.com/keycloak/keycloak-misc/master/logo/keycloak_icon_32px.svg>" as oidc
+
+skinparam RoundCorner 5
+skinparam SequenceGroupBackgroundColor white
+skinparam SequenceGroupBodyBackgroundColor lightgrey
+
+group opt
+kong -> oidc : [1] WebFinger <&thumb-up>
+activate kong
+activate oidc
+
+oidc -> kong : [2] WebFinger Document <&check>
+end
+
+kong -> oidc : [3] Discovery <&magnifying-glass>
+oidc -> kong : [4] Discovery Document <&check>
+kong -> oidc : [5] JSON Web Keys <&key>
+
+... 5 seconds later ...
+
+oidc -> kong : [6] JSON Web Keys Document <&check>
+deactivate oidc
+deactivate kong
+
+@enduml

@@ -29,10 +29,10 @@ parameters:
   description: PVC size for Apps, Config and Data
   value: 5Gi
 objects:
-- apiVersion: v1
-  kind: PersistentVolumeClaim
+- kind: PersistentVolumeClaim
+  apiVersion: v1
   metadata:
-    name: nextcloud-data
+    name: nextcloud-files
   spec:
     accessModes:
     - ReadWriteMany
@@ -134,33 +134,19 @@ objects:
       spec:
         containers:
         - env:
-          - name: NC_dbhost1
+          - name: NC_dbhost
             value: mariadb
-          - name: NC_dbuser1
+          - name: NC_dbuser
             valueFrom:
               secretKeyRef:
                 key: database-user
                 name: mariadb
-          - name: NC_dbpassword1
+          - name: NC_dbpassword
             valueFrom:
               secretKeyRef:
                 key: database-password
                 name: mariadb
-          - name: NC_dbname1
-            value: nextcloud
-          - name: POSTGRES_HOST
-            value: jh-etk-db-dev:5432
-          - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                key: superuser-username
-                name: jh-etk-db-dev
-          - name: POSTGRES_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: superuser-password
-                name: jh-etk-db-dev
-          - name: POSTGRES_DB
+          - name: NC_dbname
             value: nextcloud
           image: nextcloud
           imagePullPolicy: Always
@@ -188,16 +174,7 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /var/www/html
-            name: nextcloud-source
-          - mountPath: /var/nc/data
-            name: nextcloud-data
-            subPath: data
-          - mountPath: /var/nc/config
-            name: nextcloud-data
-            subPath: config
-          - mountPath: /var/nc/custom_apps
-            name: nextcloud-data
-            subPath: apps
+            name: nextcloud-files
         - image: nginx
           imagePullPolicy: Always
           livenessProbe:
@@ -224,26 +201,15 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /var/www/html
-            name: nextcloud-source
-          - mountPath: /var/nc/data
-            name: nextcloud-data
-            subPath: data
-          - mountPath: /var/nc/config
-            name: nextcloud-data
-            subPath: config
-          - mountPath: /var/nc/custom_apps
-            name: nextcloud-data
-            subPath: apps
+            name: nextcloud-files
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         securityContext: {}
         terminationGracePeriodSeconds: 30
         volumes:
-        - name: nextcloud-source
-          emptyDir: {}
-        - name: nextcloud-data
+        - name: nextcloud-files
           persistentVolumeClaim:
-            claimName: nextcloud-data
+            claimName: nextcloud-files
     test: false
     triggers:
     - imageChangeParams:
@@ -336,25 +302,14 @@ objects:
               terminationMessagePath: /dev/termination-log
               volumeMounts:
               - mountPath: /var/www/html
-                name: nextcloud-source
-              - mountPath: /var/nc/data
-                name: nextcloud-data
-                subPath: data
-              - mountPath: /var/nc/config
-                name: nextcloud-data
-                subPath: config
-              - mountPath: /var/nc/custom_apps
-                name: nextcloud-data
-                subPath: apps
+                name: nextcloud-files
             dnsPolicy: ClusterFirst
             restartPolicy: Never
             securityContext: {}
             terminationGracePeriodSeconds: 30
             volumes:
-            - name: nextcloud-source
-              emptyDir: {}
-            - name: nextcloud-data
+            - name: nextcloud-files
               persistentVolumeClaim:
-                claimName: nextcloud-data
+                claimName: nextcloud-files
     schedule: '*/15 * * * *'
     suspend: false
